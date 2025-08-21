@@ -142,7 +142,7 @@ docker restart mcp-fal-server
 
 ```
 ┌─────────────────┐    HTTP/SSE    ┌──────────────────┐    API Calls    ┌─────────────┐
-│   MCP Client    │ ──────────────► │  MCP Server      │ ──────────────► │   fal.ai    │
+│   MCP Client    │ ──────────────►│  MCP Server      │ ──────────────► │   fal.ai    │
 │  (Agno Agent)   │                │  (Docker)        │                 │   Service   │
 └─────────────────┘                └──────────────────┘                 └─────────────┘
 ```
