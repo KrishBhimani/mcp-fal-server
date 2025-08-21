@@ -53,7 +53,7 @@ docker ps
 
 View container logs:
 ```bash
-docker logs mcp-fal-2
+docker logs mcp-fal-server
 ```
 
 ## MCP Configuration
@@ -126,16 +126,16 @@ The Dockerfile is configured to:
 
 ```bash
 # View real-time logs
-docker logs -f mcp-fal-2
+docker logs -f mcp-fal-server
 
 # Access container shell
-docker exec -it mcp-fal-2 /bin/bash
+docker exec -it mcp-fal-server /bin/bash
 
 # Check environment variables in container
-docker exec mcp-fal-2 env | grep FAL
+docker exec mcp-fal-server env | grep FAL
 
 # Restart container
-docker restart mcp-fal-2
+docker restart mcp-fal-server
 ```
 
 ## Architecture
