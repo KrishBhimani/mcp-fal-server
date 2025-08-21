@@ -38,10 +38,10 @@ PORT=8000
 
 ```bash
 # Build the Docker image
-docker build -t mcp-fal-2 .
+docker build -t mcp-fal-server .
 
 # Run the container with port mapping
-docker run -d -p 8000:8000 --name mcp-fal-2 mcp-fal-2
+docker run -d -p 8000:8000 --name mcp-fal-server mcp-fal-server
 ```
 
 ### 3. Verify Deployment
