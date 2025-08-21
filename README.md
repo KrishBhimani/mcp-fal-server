@@ -56,24 +56,34 @@ View container logs:
 docker logs mcp-fal-2
 ```
 
-## Usage with Agno Agent
+## MCP Configuration
 
-### Running the Client
+Once deployed, use this MCP configuration to connect to your server:
 
-Use the provided `fal_mcp.py` client to interact with the deployed MCP server:
-
-```bash
-python fal_mcp.py
+```json
+{
+  "mcpServers": {
+    "fal-ai": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8000/sse"],
+      "env": {}
+    }
+  }
+}
 ```
 
-### Example Usage
+For remote deployment, replace `localhost:8000` with your server's domain:
 
-```
-🧑 You: create an image of a beautiful sunset over mountains
-🤖 Agent: [Generated image will be created using fal.ai models]
-
-🧑 You: create a video of waves crashing on a beach
-🤖 Agent: [Generated video will be created using fal.ai models]
+```json
+{
+  "mcpServers": {
+    "fal-ai": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://your-domain.com/sse"],
+      "env": {}
+    }
+  }
+}
 ```
 
 ## Configuration
@@ -118,6 +128,12 @@ The Dockerfile is configured to:
 # View real-time logs
 docker logs -f mcp-fal-2
 
+# Access container shell
+docker exec -it mcp-fal-2 /bin/bash
+
+# Check environment variables in container
+docker exec mcp-fal-2 env | grep FAL
+
 # Restart container
 docker restart mcp-fal-2
 ```
@@ -126,7 +142,7 @@ docker restart mcp-fal-2
 
 ```
 ┌─────────────────┐    HTTP/SSE    ┌──────────────────┐    API Calls    ┌─────────────┐
-│   fal_mcp.py    │ ──────────────► │  MCP Server      │ ──────────────► │   fal.ai    │
+│   MCP Client    │ ──────────────► │  MCP Server      │ ──────────────► │   fal.ai    │
 │  (Agno Agent)   │                │  (Docker)        │                 │   Service   │
 └─────────────────┘                └──────────────────┘                 └─────────────┘
 ```
