@@ -1,86 +1,146 @@
-# fal.ai MCP Server
+# fal.ai MCP Server - Docker Deployment
 
-A Model Context Protocol (MCP) server for interacting with fal.ai models and services.
+A Model Context Protocol (MCP) server for interacting with fal.ai models and services, optimized for Docker deployment and integration with Agno agents.
 
 ## Features
 
-- List all available fal.ai models
-- Search for specific models by keywords
-- Get model schemas
-- Generate content using any fal.ai model
+- Generate hyperrealistic images using fal.ai models
+- Generate short videos using fal.ai video models
 - Support for both direct and queued model execution
-- Queue management (status checking, getting results, cancelling requests)
-- File upload to fal.ai CDN
+- Docker-based deployment for easy hosting
+- SSE (Server-Sent Events) transport for remote access
+- Automatic environment configuration
+- Integration with Agno framework
 
-## Requirements
+## Quick Start with Docker
 
-- Python 3.10+
-- fastmcp
-- httpx
-- aiofiles
-- A fal.ai API key
+### Prerequisites
 
-## Installation
+- Docker installed on your system
+- A fal.ai API key (get one from [fal.ai](https://fal.ai))
 
-1. Clone this repository:
+### 1. Setup Environment
+
+1. Navigate to the mcp-fal directory:
 ```bash
-git clone https://github.com/am0y/mcp-fal.git
 cd mcp-fal
 ```
 
-2. Install the required packages:
+2. Update the `.env` file with your actual fal.ai API key:
 ```bash
-pip install fastmcp httpx aiofiles
+# Edit .env file
+FAL_KEY="your_actual_fal_api_key_here"
+HOST=0.0.0.0
+PORT=8000
 ```
 
-3. Set your fal.ai API key as an environment variable:
-```bash
-export FAL_KEY="YOUR_FAL_API_KEY_HERE"
-```
-
-## Usage
-
-### Running the Server
-
-You can run the server in development mode with:
+### 2. Deploy with Docker
 
 ```bash
-fastmcp dev main.py
+# Build the Docker image
+docker build -t mcp-fal-2 .
+
+# Run the container with port mapping
+docker run -d -p 8000:8000 --name mcp-fal-2 mcp-fal-2
 ```
 
-This will launch the MCP Inspector web interface where you can test the tools interactively.
+### 3. Verify Deployment
 
-### Installing in Claude Desktop
+Check if the container is running:
+```bash
+docker ps
+```
 
-To use the server with Claude Desktop:
+View container logs:
+```bash
+docker logs mcp-fal-2
+```
+
+## Usage with Agno Agent
+
+### Running the Client
+
+Use the provided `fal_mcp.py` client to interact with the deployed MCP server:
 
 ```bash
-fastmcp install main.py -e FAL_KEY="YOUR_FAL_API_KEY_HERE"
+python fal_mcp.py
 ```
 
-This will make the server available to Claude in the Desktop app.
+### Example Usage
 
-### Running Directly
+```
+🧑 You: create an image of a beautiful sunset over mountains
+🤖 Agent: [Generated image will be created using fal.ai models]
 
-You can also run the server directly:
+🧑 You: create a video of waves crashing on a beach
+🤖 Agent: [Generated video will be created using fal.ai models]
+```
+
+## Configuration
+
+### Environment Variables
+
+The following environment variables are automatically loaded from the `.env` file:
+
+- `FAL_KEY`: Your fal.ai API key (required)
+- `HOST`: Server host (default: 0.0.0.0)
+- `PORT`: Server port (default: 8000)
+
+### Docker Configuration
+
+The Dockerfile is configured to:
+- Use Python 3.11-slim base image
+- Automatically copy and load the `.env` file
+- Expose port 8000
+- Run the server with SSE transport
+- Handle environment variables properly
+
+## Troubleshooting
+
+### Common Issues
+
+1. **FAL_KEY not set error**:
+   - Ensure your `.env` file contains the correct API key
+   - Rebuild the Docker image after updating the `.env` file
+
+2. **Connection refused**:
+   - Check if the container is running: `docker ps`
+   - Verify port mapping: `-p 8000:8000`
+
+3. **ASGI cleanup errors in logs**:
+   - These are harmless connection cleanup errors
+   - They don't affect functionality
+   - The server continues to work normally
+
+### Useful Commands
 
 ```bash
-python main.py
+# View real-time logs
+docker logs -f mcp-fal-2
+
+# Restart container
+docker restart mcp-fal-2
 ```
 
-## API Reference
+## Architecture
 
-### Tools
+```
+┌─────────────────┐    HTTP/SSE    ┌──────────────────┐    API Calls    ┌─────────────┐
+│   fal_mcp.py    │ ──────────────► │  MCP Server      │ ──────────────► │   fal.ai    │
+│  (Agno Agent)   │                │  (Docker)        │                 │   Service   │
+└─────────────────┘                └──────────────────┘                 └─────────────┘
+```
 
-- `models(page=None, total=None)` - List available models with optional pagination
-- `search(keywords)` - Search for models by keywords
-- `schema(model_id)` - Get OpenAPI schema for a specific model
-- `generate(model, parameters, queue=False)` - Generate content using a model
-- `result(url)` - Get result from a queued request
-- `status(url)` - Check status of a queued request
-- `cancel(url)` - Cancel a queued request
-- `upload(path` - Upload a file to fal.ai CDN
+## Development
+
+### Building Custom Images
+
+To build with a different tag:
+```bash
+docker build -t my-fal-mcp .
+docker run -d -p 8000:8000 --name my-fal-container my-fal-mcp
+```
 
 ## License
 
-[MIT](LICENSE)
+MIT License - See LICENSE file for details.
